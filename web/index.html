@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>aitools 管理台</title>
+  <link rel="stylesheet" href="/web/app-shell.css?v=20260608-applayer-1">
+  <link rel="stylesheet" href="/web/styles.css?v=20260608-applayer-1">
+  <link rel="stylesheet" href="/web/product-switcher.css?v=20260608-applayer-1">
+</head>
+<body>
+  <header class="shellbar">
+    <a class="shellbrand" href="/web/">aitools</a>
+    <h1 class="shelltitle">管理台</h1>
+    <div class="shellactions" data-product-switcher-host></div>
+  </header>
+
+  <main class="workspace">
+    <section class="intro">
+      <span class="eyebrow">aitools</span>
+      <h2>服务概览</h2>
+      <p>查看局域网服务、产品入口、安装包和同步状态。</p>
+    </section>
+
+    <section class="status" aria-label="服务状态">
+      <div>
+        <span class="label">服务</span>
+        <strong id="serverState">检查中</strong>
+      </div>
+      <div>
+        <span class="label">端口</span>
+        <strong id="serverPort">-</strong>
+      </div>
+      <div>
+        <span class="label">产品</span>
+        <strong id="toolCount">-</strong>
+      </div>
+    </section>
+
+    <section class="manageSection">
+      <div class="sectionHead">
+        <div>
+          <h2>产品</h2>
+          <p>打开产品页面，或下载对应 Android 安装包。</p>
+        </div>
+      </div>
+      <div id="tools" class="toolGrid"></div>
+    </section>
+  </main>
+
+  <script src="/web/app.js?v=20260606-manage-1"></script>
+  <script src="/web/product-switcher.js?v=20260608-applayer-1" data-current="manage"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "com.minidiary"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.minidiary"
+        minSdk 23
+        targetSdk 35
+        versionCode 25
+        versionName "3.4"
+    }
+}

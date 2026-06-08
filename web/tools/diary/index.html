@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一页日记 Web</title>
+  <link rel="stylesheet" href="/web/app-shell.css?v=20260608-applayer-1">
+  <link rel="stylesheet" href="styles.css?v=20260608-diary-applayer-1">
+  <link rel="stylesheet" href="/web/product-switcher.css?v=20260608-applayer-1">
+</head>
+<body>
+  <header class="shellbar">
+    <a class="shellbrand" href="/web/">aitools</a>
+    <h1 class="shelltitle">一页日记</h1>
+    <div class="shellactions" data-product-switcher-host>
+      <button id="openSettings" class="shell-icon-button" title="设置" aria-label="设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 17h16"></path>
+          <circle cx="9" cy="7" r="2"></circle>
+          <circle cx="15" cy="12" r="2"></circle>
+          <circle cx="11" cy="17" r="2"></circle>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+    <nav id="tabs" class="tabs">
+      <button class="tab active" data-tab="write">今天</button>
+      <button class="tab" data-tab="calendar">日历</button>
+      <button class="tab" data-tab="tags">标签</button>
+    </nav>
+
+    <section id="write" class="page active">
+      <div id="editor" class="editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="今天..."></div>
+      <div id="tagHints" class="chips"></div>
+      <div class="write-bar">
+        <button id="pickImage" class="tool-button" title="插入图片" aria-label="插入图片">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 5h14v14H5z"></path>
+            <path d="m8 16 3.2-3.2 2.3 2.3 1.7-1.7L18 16"></path>
+            <circle cx="8.5" cy="8.5" r="1.2"></circle>
+          </svg>
+        </button>
+        <button id="newEntry" class="tool-button" title="清空" aria-label="清空">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 7h12"></path>
+            <path d="M9 7V5h6v2"></path>
+            <path d="M8 10v8"></path>
+            <path d="M12 10v8"></path>
+            <path d="M16 10v8"></path>
+            <path d="M7 7l1 13h8l1-13"></path>
+          </svg>
+        </button>
+        <button id="saveEntry" class="primary">保存</button>
+      </div>
+      <input id="imageInput" type="file" accept="image/*" hidden>
+    </section>
+
+    <section id="calendar" class="page">
+      <div id="calendarAuthorFilters" class="chips author-filters"></div>
+      <div class="monthbar">
+        <button id="prevMonth">‹</button>
+        <strong id="monthTitle"></strong>
+        <button id="todayBtn">今天</button>
+        <button id="allDaysBtn">全部</button>
+        <button id="nextMonth">›</button>
+      </div>
+      <div id="calendarGrid" class="calendar"></div>
+      <h2 id="calendarListTitle">当天日记</h2>
+      <div id="calendarEntries" class="list"></div>
+    </section>
+
+    <section id="tags" class="page">
+      <h2>筛选</h2>
+      <div id="tagAuthorFilters" class="chips author-filters"></div>
+      <div id="tagFilters" class="chips"></div>
+      <h2 id="tagListTitle">全部日记</h2>
+      <div id="tagEntries" class="list"></div>
+    </section>
+
+    <section id="settings" class="page settings-page">
+      <input id="zipInput" type="file" accept=".zip,application/zip" hidden>
+      <section class="settings-panel panel" aria-label="日记设置">
+        <div class="settings-head">
+          <button id="backSettings" class="tool-button" title="返回" aria-label="返回">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </button>
+          <div>
+            <span class="settings-kicker">一页日记</span>
+            <h2>设置</h2>
+            <p>备份导入导出和数据边界说明。</p>
+          </div>
+        </div>
+        <div class="settings-sections">
+          <div class="settings-section">
+            <h3>写作者</h3>
+            <div class="settings-group settings-form">
+              <label class="settings-field">
+                <span>
+                  <strong>当前写作者</strong>
+                  <small>新日记会默认记到这个名字下，旧日记默认是小妈妈。</small>
+                </span>
+                <input id="currentAuthor" type="text" autocomplete="off" maxlength="24" placeholder="小妈妈">
+              </label>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>数据管理</h3>
+            <div class="settings-group">
+              <button id="importZip" class="settings-row">
+                <span>
+                  <strong>导入 ZIP</strong>
+                  <small>从备份包合并日记</small>
+                </span>
+                <b>›</b>
+              </button>
+              <button id="exportZip" class="settings-row">
+                <span>
+                  <strong>导出 ZIP</strong>
+                  <small>保存本机完整备份</small>
+                </span>
+                <b>›</b>
+              </button>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>关于</h3>
+            <div class="about-card">
+              <strong>一页日记</strong>
+              <p>本地优先日记，支持图片、标签、Web 客户端和手机同步。</p>
+              <dl>
+                <div>
+                  <dt>电脑端</dt>
+                  <dd>直接读取当前电脑服务里的日记数据。</dd>
+                </div>
+                <div>
+                  <dt>手机端</dt>
+                  <dd>把手机日记增量同步到电脑服务。</dd>
+                </div>
+                <div>
+                  <dt>数据范围</dt>
+                  <dd>仅面向可信局域网使用，不作为公网服务。</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section id="detail" class="page detail">
+      <div class="detailbar">
+        <button id="backDetail">返回</button>
+        <strong id="detailDate"></strong>
+        <button id="editDetail" class="primary">编辑</button>
+      </div>
+      <div id="detailTags" class="meta"></div>
+      <article id="detailBody"></article>
+      <button id="deleteDetail" class="danger">删除</button>
+    </section>
+  </main>
+
+  <div id="lightbox" class="lightbox" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+  <div id="confirmLayer" class="confirm-layer" hidden>
+    <section class="confirm-box" role="dialog" aria-modal="true">
+      <p id="confirmText"></p>
+      <div class="confirm-actions">
+        <button id="confirmCancel">取消</button>
+        <button id="confirmOk" class="primary">确定</button>
+      </div>
+    </section>
+  </div>
+  <script src="app.js?v=20260608-diary-applayer-1"></script>
+  <script src="/web/product-switcher.js?v=20260608-applayer-1" data-current="diary"></script>
+</body>
+</html>

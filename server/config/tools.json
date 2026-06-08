@@ -1,0 +1,140 @@
+[
+  {
+    "id": "tracker",
+    "name": "日常格",
+    "app": "daily-grid",
+    "packageName": "com.minitracker",
+    "description": "自定义事项的日常记录工具，支持补打、按事项查看趋势、Web 客户端和手机同步。",
+    "webPath": "/tools/tracker/",
+    "apkFileName": "tracker-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/tracker-debug.apk",
+      "android/tracker-app/build/outputs/apk/debug/app-debug.apk",
+      "android/tracker-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": true,
+      "stateName": "tracker"
+    }
+  },
+  {
+    "id": "diary",
+    "name": "一页日记",
+    "app": "one-page-diary",
+    "packageName": "com.minidiary",
+    "description": "本地优先日记，支持图片、标签、Web 客户端和手机同步。",
+    "webPath": "/tools/diary/",
+    "apkFileName": "diary-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/diary-debug.apk",
+      "android/diary-app/build/outputs/apk/debug/app-debug.apk",
+      "android/diary-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": true,
+      "stateName": "diary"
+    }
+  },
+  {
+    "id": "print",
+    "name": "快印",
+    "app": "quick-print",
+    "packageName": "com.miniprint",
+    "description": "快速接收分享文字，预览 A4 页面并调用 Android 系统打印。",
+    "apkFileName": "print-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/print-debug.apk",
+      "android/print-app/build/outputs/apk/debug/app-debug.apk",
+      "android/print-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "print"
+    }
+  },
+  {
+    "id": "metronome",
+    "name": "节拍器",
+    "app": "metronome",
+    "packageName": "com.minimetronome",
+    "description": "简洁手机节拍器，支持 BPM 调速和意大利语速度名称。",
+    "apkFileName": "metronome-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/metronome-debug.apk",
+      "android/metronome-app/build/outputs/apk/debug/app-debug.apk",
+      "android/metronome-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "metronome"
+    }
+  },
+  {
+    "id": "word-duel",
+    "name": "相似词决斗",
+    "app": "word-duel",
+    "packageName": "com.miniwordduel",
+    "description": "高一英语易混词选择小游戏，支持限时闯关、错题复习和词对图鉴。",
+    "apkFileName": "word-duel-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/word-duel-debug.apk",
+      "android/word-duel-app/build/outputs/apk/debug/app-debug.apk",
+      "android/word-duel-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "word-duel"
+    }
+  },
+  {
+    "id": "street-duel",
+    "name": "街区对决",
+    "app": "street-duel",
+    "packageName": "com.streetduel",
+    "description": "男孩子向轻量卡牌对战游戏，三据点五格拉锯，支持单机 AI 对战、场地、事件和卡牌技能。",
+    "apkFileName": "street-duel-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/street-duel-debug.apk",
+      "android/street-duel-app/build/outputs/apk/debug/app-debug.apk",
+      "android/street-duel-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "street-duel"
+    }
+  },
+  {
+    "id": "egg-friends",
+    "name": "Egg和他的朋友们",
+    "app": "egg-friends",
+    "packageName": "com.eggfriends",
+    "description": "横屏街机格斗游戏，支持局域网二人对战和人机练习，包含三局两胜、60 秒小局、生命、能量、护盾、轻重攻击、必杀和破防规则。",
+    "apkFileName": "egg-friends-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/egg-friends-debug.apk",
+      "android/egg-friends-app/build/outputs/apk/debug/app-debug.apk",
+      "android/egg-friends-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "egg-friends"
+    }
+  },
+  {
+    "id": "market",
+    "name": "工具市场",
+    "app": "aitools-market",
+    "packageName": "com.aitools.market",
+    "description": "统一发现、安装、更新和打开 aitools Android 工具。",
+    "apkFileName": "market-debug.apk",
+    "apkCandidates": [
+      "artifacts/apk/market-debug.apk",
+      "android/market-app/build/outputs/apk/debug/app-debug.apk",
+      "android/market-app/app/build/outputs/apk/debug/app-debug.apk"
+    ],
+    "sync": {
+      "enabled": false,
+      "stateName": "market"
+    }
+  }
+]

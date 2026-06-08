@@ -1,0 +1,16 @@
+{
+  "name": "aitools",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js",
+    "build:diary": "bash scripts/build-diary-apk.sh",
+    "build:print": "bash scripts/build-print-apk.sh",
+    "build:metronome": "bash scripts/build-metronome-apk.sh",
+    "build:market": "bash scripts/build-market-apk.sh",
+    "build:apks": "bash scripts/build-all-apks.sh"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.10.0"
+  }
+}

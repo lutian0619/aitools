@@ -1,0 +1,15 @@
+.DS_Store
+node_modules/
+.gradle/
+build/
+app/build/
+android/*/build/
+android/*/app/build/
+android/*/.gradle/
+artifacts/apk/*.apk
+sync/
+sync/**/*.zip
+sync/**/history/
+sync/**/state/
+local.properties
+*.keystore

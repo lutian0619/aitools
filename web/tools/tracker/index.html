@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日常格 Web</title>
+  <link rel="stylesheet" href="/web/app-shell.css?v=20260608-applayer-1">
+  <link rel="stylesheet" href="styles.css?v=20260608-tracker-16">
+  <link rel="stylesheet" href="/web/product-switcher.css?v=20260608-applayer-1">
+</head>
+<body>
+  <header class="shellbar">
+    <a class="shellbrand" href="/web/">aitools</a>
+    <h1 class="shelltitle">日常格</h1>
+    <div class="shellactions" data-product-switcher-host>
+      <button id="openSettings" class="shell-icon-button" title="设置" aria-label="设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 17h16"></path>
+          <circle cx="9" cy="7" r="2"></circle>
+          <circle cx="15" cy="12" r="2"></circle>
+          <circle cx="11" cy="17" r="2"></circle>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+    <nav id="tabs" class="tabs">
+      <button class="tab active" data-tab="record">记录</button>
+      <button class="tab" data-tab="byday">日历</button>
+      <button class="tab" data-tab="projects">事项</button>
+    </nav>
+
+    <section id="record" class="page active">
+      <section class="panel record-panel">
+        <input id="dateInput" type="date" required hidden>
+        <div class="record-calendar">
+          <div class="monthbar record-monthbar">
+            <button id="recordPrevMonth" class="date-step" type="button" title="上个月" aria-label="上个月">‹</button>
+            <strong id="recordMonthLabel"></strong>
+            <button id="recordNextMonth" class="date-step" type="button" title="下个月" aria-label="下个月">›</button>
+            <button id="recordToday" type="button">今天</button>
+          </div>
+          <div id="recordCalendarGrid" class="calendar record-calendar-grid"></div>
+        </div>
+        <div class="daily-heading">
+          <strong id="selectedDateLabel"></strong>
+        </div>
+        <div id="recordEditor" class="record-editor-host"></div>
+        <div id="dailyList" class="daily-list"></div>
+      </section>
+    </section>
+
+    <section id="projects" class="page">
+      <div class="project-toolbar">
+        <button id="addProject" class="primary" type="button">新增事项</button>
+      </div>
+      <section id="projectFormPanel" class="panel quick-panel" hidden>
+        <div class="panel-head">
+          <div>
+            <h2 id="projectFormTitle">新增事项</h2>
+          </div>
+        </div>
+        <form id="projectForm" class="record-form">
+          <label>
+            <span>事项名称</span>
+            <input id="projectNameInput" type="text" placeholder="事项名称">
+          </label>
+          <label>
+            <span>记录类型</span>
+            <div class="segmented-control project-kind-choice" data-project-kind-choice>
+              <button type="button" data-kind="number">数值</button>
+              <button type="button" data-kind="check">打卡</button>
+            </div>
+            <select id="projectKindInput" hidden>
+              <option value="number">数值</option>
+              <option value="check">打卡</option>
+            </select>
+          </label>
+          <label id="projectUnitField">
+            <span>默认单位</span>
+            <input id="projectUnitInput" type="text" placeholder="kg、页">
+          </label>
+          <label id="projectStatField">
+            <span>统计方式</span>
+            <div class="segmented-control project-stat-choice" data-project-stat-choice>
+              <button type="button" data-stat="sum">累计</button>
+              <button type="button" data-stat="avg">平均</button>
+            </div>
+            <select id="projectStatInput" hidden>
+              <option value="sum">累计</option>
+              <option value="avg">平均</option>
+            </select>
+          </label>
+          <div class="form-actions wide">
+            <button id="saveProject" class="primary" type="submit">保存事项</button>
+            <button id="cancelProject" type="button">取消</button>
+          </div>
+        </form>
+      </section>
+      <div id="projectList" class="list project-list"></div>
+    </section>
+
+    <section id="itemDetail" class="page">
+      <section class="panel detail-panel">
+        <div class="detailbar">
+          <button id="backToProjects" type="button">返回事项</button>
+          <button id="openAnnualStats" type="button">年度统计</button>
+        </div>
+        <div class="panel-head">
+          <div>
+            <span id="detailMeta" class="kicker"></span>
+            <h2 id="detailTitle"></h2>
+          </div>
+        </div>
+        <div id="detailStats" class="stat-grid"></div>
+        <div id="detailVisual"></div>
+      </section>
+      <section class="panel detail-panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="detailHistoryTitle">历史</h2>
+          </div>
+        </div>
+        <div id="detailHistory" class="list"></div>
+      </section>
+    </section>
+
+    <section id="annualStats" class="page">
+      <section class="panel detail-panel annual-panel">
+        <div class="detailbar">
+          <button id="backToDetail" type="button">返回详情</button>
+        </div>
+        <div class="panel-head">
+          <div>
+            <span id="annualMeta" class="kicker"></span>
+            <h2 id="annualTitle">年度统计</h2>
+          </div>
+        </div>
+        <div class="annual-yearbar">
+          <button id="annualPrevYear" type="button">‹</button>
+          <strong id="annualYearLabel"></strong>
+          <button id="annualNextYear" type="button">›</button>
+        </div>
+        <div id="annualSummary" class="stat-grid"></div>
+        <div id="annualWeekly"></div>
+        <div id="annualGrid"></div>
+      </section>
+    </section>
+
+    <section id="settings" class="page settings-page">
+      <input id="zipInput" type="file" accept=".zip,application/zip" hidden>
+      <section class="settings-panel panel" aria-label="日常格设置">
+        <div class="settings-head">
+          <button id="backSettings" class="tool-button" title="返回" aria-label="返回">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </button>
+          <div>
+            <span class="settings-kicker">日常格</span>
+            <h2>设置</h2>
+            <p>备份导入导出和数据边界说明。</p>
+          </div>
+        </div>
+        <div class="settings-sections">
+          <div class="settings-section">
+            <h3>数据管理</h3>
+            <div class="settings-group">
+              <p id="syncDebug" class="sync-debug">同步状态待检查</p>
+              <button id="refreshData" class="settings-row">
+                <span>
+                  <strong>刷新数据</strong>
+                  <small>重新读取当前电脑服务里的事项和记录</small>
+                </span>
+                <b>›</b>
+              </button>
+              <button id="importZip" class="settings-row">
+                <span>
+                  <strong>导入 ZIP</strong>
+                  <small>从备份包合并日常格记录</small>
+                </span>
+                <b>›</b>
+              </button>
+              <a id="exportZip" class="settings-row" href="/api/tools/tracker/latest" download>
+                <span>
+                  <strong>导出 ZIP</strong>
+                  <small>保存电脑服务里的完整备份</small>
+                </span>
+                <b>›</b>
+              </a>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>关于</h3>
+            <div class="about-card">
+              <strong>日常格</strong>
+              <p>自定义事项的日常记录工具，支持补打、按事项查看趋势、Web 客户端和手机同步。</p>
+              <dl>
+                <div>
+                  <dt>电脑端</dt>
+                  <dd>直接读取当前电脑服务里的日常格数据。</dd>
+                </div>
+                <div>
+                  <dt>手机端</dt>
+                  <dd>把手机记录增量同步到电脑服务。</dd>
+                </div>
+                <div>
+                  <dt>数据范围</dt>
+                  <dd>仅面向可信局域网使用，不作为公网服务。</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js?v=20260608-tracker-16"></script>
+  <script src="/web/product-switcher.js?v=20260608-applayer-1" data-current="tracker"></script>
+</body>
+</html>

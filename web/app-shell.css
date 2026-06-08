@@ -1,0 +1,142 @@
+:root {
+  color-scheme: light;
+  --ink: #2f2925;
+  --muted: #75685f;
+  --paper: #fdefef;
+  --panel: #ffffff;
+  --panel-soft: #f4dfd0;
+  --line: #dad0c2;
+  --line-strong: #cdbba7;
+  --accent: #8a715e;
+  --accent-warm: #cdbba7;
+  --accent-gold: #c8a15a;
+  --shadow-soft: 0 10px 26px rgba(72, 55, 34, 0.08);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.shellbar {
+  position: relative;
+  z-index: 100;
+  height: 58px;
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.shellbrand {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.shelltitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.shellactions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.shellbutton {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shellbutton.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.shell-icon-button {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.shell-icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workspace {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 72px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.panel::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-warm), var(--accent-gold), var(--accent));
+}
+
+@media (max-width: 700px) {
+  .shellbar {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 12px;
+  }
+
+  .shelltitle {
+    font-size: 20px;
+  }
+
+  .shellbutton {
+    padding: 0 10px;
+  }
+
+  .workspace {
+    width: calc(100% - 24px);
+    padding-top: 16px;
+  }
+}
