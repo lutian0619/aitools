@@ -2,4 +2,4 @@
 
 规则与规划主文档：
 
-[../../docs/Egg和他的朋友们-游戏规则.md](../../docs/Egg和他的朋友们-游戏规则.md)
+[../../docs/egg-friends-rules.md](../../docs/egg-friends-rules.md)
