@@ -228,6 +228,14 @@ public class MainActivity extends Activity {
         });
 
         switchTab(TAB_WRITE);
+        handleIncomingShare(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIncomingShare(intent);
     }
 
     @Override
@@ -675,6 +683,51 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             toast("保存失败");
         }
+    }
+
+    private void handleIncomingShare(Intent intent) {
+        if (intent == null || !Intent.ACTION_SEND.equals(intent.getAction())) {
+            return;
+        }
+        CharSequence sharedText = intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+        if (sharedText == null || sharedText.toString().trim().isEmpty()) {
+            toast("分享内容为空");
+            return;
+        }
+        String body = buildSharedDiaryBody(
+                sharedText.toString(),
+                intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        );
+        long now = System.currentTimeMillis();
+        long id = now;
+        while (entryById(id, true) != null) {
+            id++;
+        }
+        try {
+            saveEntryToDatabase(id, id, now, body, currentAuthor());
+            selectedDayStart = startOfDay(id);
+            visibleMonth.setTimeInMillis(selectedDayStart);
+            JSONObject saved = entryById(id);
+            if (saved != null) {
+                showReadOnlyEntry(saved);
+            }
+            toast("已从分享保存");
+        } catch (Exception e) {
+            toast("分享保存失败");
+        }
+        intent.setAction(null);
+    }
+
+    private String buildSharedDiaryBody(String text, String subject) {
+        String body = text == null ? "" : text.trim();
+        String cleanSubject = subject == null ? "" : subject.trim();
+        if (!cleanSubject.isEmpty() && !body.contains(cleanSubject)) {
+            body = cleanSubject + "\n\n" + body;
+        }
+        if (extractTags(body).contains("分享")) {
+            return body;
+        }
+        return body + "\n\n#分享";
     }
 
     private JSONObject buildEntry(long id, String body, String createdAt) throws JSONException {
