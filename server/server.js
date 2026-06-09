@@ -21,19 +21,21 @@ const EGG_ROOM_ID = "default";
 const EGG_AI_DEVICE_ID = "__egg_ai__";
 const EGG_ARENA_WIDTH = 1200;
 const EGG_FLOOR_Y = 0;
-const EGG_MAX_HP = 100;
+const EGG_MAX_HP = 140;
 const EGG_MAX_ENERGY = 100;
-const EGG_MAX_GUARD = 100;
+const EGG_MAX_GUARD = 115;
 const EGG_WIN_ROUNDS = 2;
 const EGG_ROUND_MS = 60_000;
-const EGG_GRAVITY = 2900;
-const EGG_JUMP_VELOCITY = 720;
-const EGG_MOVE_SPEED = 340;
+const EGG_GRAVITY = 3600;
+const EGG_JUMP_VELOCITY = 1080;
+const EGG_AIR_PASS_HEIGHT = 10;
+const EGG_MOVE_SPEED = 360;
 const EGG_BLOCK_MOVE_SPEED = 120;
 const EGG_GUARD_RECOVERY = 26;
 const EGG_GUARD_DRAIN = 20;
 const EGG_ENERGY_RECOVERY = 4.5;
-const EGG_SPECIAL_COST = 55;
+const EGG_SKILL_COST = 35;
+const EGG_ULTIMATE_COST = 100;
 const EGG_SPECIAL_DASH = 190;
 const EGG_LIGHT_ACTIVE_MS = 200;
 const EGG_LIGHT_COOLDOWN_MS = 330;
@@ -41,6 +43,17 @@ const EGG_HEAVY_ACTIVE_MS = 330;
 const EGG_HEAVY_COOLDOWN_MS = 570;
 const EGG_SPECIAL_ACTIVE_MS = 470;
 const EGG_SPECIAL_COOLDOWN_MS = 820;
+const EGG_BLOCK_HURT_MS = 80;
+const EGG_HIT_HURT_MS = 250;
+const EGG_GUARD_BREAK_HURT_MS = 430;
+const EGG_GUARD_BREAK_LABEL_MS = 650;
+const EGG_CHARACTER_STATS = {
+  Egg: { archetype: "均衡", maxHp: 260, maxGuard: 120, moveSpeed: 360, lightDamage: 3, heavyDamage: 7, specialDamage: 10 },
+  "小米": { archetype: "疾行", maxHp: 225, maxGuard: 105, moveSpeed: 430, lightDamage: 3, heavyDamage: 6, specialDamage: 9 },
+  Meo: { archetype: "铁壁", maxHp: 305, maxGuard: 145, moveSpeed: 300, lightDamage: 3, heavyDamage: 7, specialDamage: 10 },
+  "小红": { archetype: "重击", maxHp: 245, maxGuard: 112, moveSpeed: 335, lightDamage: 4, heavyDamage: 9, specialDamage: 12 },
+  "蛋卷教练": { archetype: "教练", maxHp: 260, maxGuard: 120, moveSpeed: 360, lightDamage: 3, heavyDamage: 7, specialDamage: 10 },
+};
 
 const types = {
   ".html": "text/html; charset=utf-8",
@@ -348,7 +361,8 @@ function handleEggFriendsApi(req, res, url) {
         return;
       }
       player.lastSeen = Date.now();
-      player.name = safeEggName(payload.name || player.name);
+      player.name = eggDisplayNameForSlot(player.slot, payload.name || player.name);
+      applyEggStats(player, { resetVitals: room.status === "waiting" });
       player.input = {
         left: Boolean(payload.left),
         right: Boolean(payload.right),
@@ -356,6 +370,7 @@ function handleEggFriendsApi(req, res, url) {
         light: Boolean(payload.light),
         heavy: Boolean(payload.heavy),
         special: Boolean(payload.special),
+        ultimate: Boolean(payload.ultimate),
         block: Boolean(payload.block),
       };
       if (payload.ready) player.ready = true;
@@ -384,6 +399,7 @@ function eggRoom(roomId) {
     message: "等待第二位朋友加入",
     roundWinner: 0,
     matchWinner: 0,
+    aiLevel: 1,
     updatedAt: Date.now(),
     countdownUntil: 0,
     roundEndsAt: 0,
@@ -394,10 +410,11 @@ function eggRoom(roomId) {
 }
 
 function newEggPlayer(slot) {
-  return {
+  const player = {
     slot,
     deviceId: "",
     name: slot === 1 ? "Egg" : "朋友",
+    archetype: "均衡",
     connected: false,
     ready: false,
     x: slot === 1 ? 290 : 910,
@@ -405,13 +422,23 @@ function newEggPlayer(slot) {
     vx: 0,
     vy: 0,
     facing: slot === 1 ? 1 : -1,
+    maxHp: EGG_MAX_HP,
     hp: EGG_MAX_HP,
     energy: 28,
+    maxGuard: EGG_MAX_GUARD,
     guard: EGG_MAX_GUARD,
+    moveSpeed: EGG_MOVE_SPEED,
+    lightDamage: 8,
+    heavyDamage: 17,
+    specialDamage: 10,
+    skillUntil: 0,
+    ultimateUntil: 0,
+    invincibleUntil: 0,
     wins: 0,
     combo: 0,
     comboUntil: 0,
     hitSparkUntil: 0,
+    guardBreakUntil: 0,
     attack: "",
     attackUntil: 0,
     attackHit: false,
@@ -421,6 +448,8 @@ function newEggPlayer(slot) {
     lastSeen: 0,
     input: {},
   };
+  applyEggStats(player, { resetVitals: true });
+  return player;
 }
 
 function joinEggRoom(room, deviceId, name) {
@@ -440,7 +469,8 @@ function joinEggRoom(room, deviceId, name) {
     Object.assign(player, newEggPlayer(player.slot), { wins: oldWins });
   }
   player.deviceId = deviceId;
-  player.name = name;
+  player.name = eggDisplayNameForSlot(player.slot, name);
+  applyEggStats(player, { resetVitals: room.status === "waiting" });
   player.connected = true;
   player.lastSeen = Date.now();
   player.ready = room.status === "running";
@@ -454,6 +484,7 @@ function joinEggRoom(room, deviceId, name) {
         ready: true,
         lastSeen: Date.now(),
       });
+      applyEggStats(ai, { resetVitals: room.status === "waiting" });
     }
   }
   maybeStartEggRoom(room);
@@ -495,6 +526,7 @@ function resetEggRound(room, keepReady) {
       ready: keepReady && connected[i],
       lastSeen: connected[i] ? Date.now() : 0,
     });
+    applyEggStats(room.players[i], { resetVitals: true });
   }
   room.roundWinner = 0;
   room.matchWinner = 0;
@@ -565,6 +597,7 @@ function simulateEggStep(room, dt, now) {
 function finishEggRound(room, winner, reason) {
   room.roundEndsAt = 0;
   room.roundWinner = winner ? winner.slot : 0;
+  updateEggAiLevel(room, winner);
   if (!winner) {
     room.status = "ended";
     room.message = "平局，重开这一局";
@@ -583,6 +616,14 @@ function finishEggRound(room, winner, reason) {
     player.ready = false;
     player.input = {};
   }
+}
+
+function updateEggAiLevel(room, winner) {
+  if (room.mode !== "ai" || !winner) return;
+  const current = Number(room.aiLevel || 1);
+  room.aiLevel = winner.slot === 1
+    ? clamp(Math.round(current + 1), 1, 3)
+    : clamp(Math.round(current - 1), 1, 3);
 }
 
 function eggKnockoutWinner(room) {
@@ -610,31 +651,33 @@ function updateEggPlayer(player, opponent, dt, now) {
   const grounded = player.y <= EGG_FLOOR_Y + 0.5;
   if (player.comboUntil <= now) player.combo = 0;
   if (!input.block || stunned || attacking) {
-    player.guard = clamp(player.guard + EGG_GUARD_RECOVERY * dt, 0, EGG_MAX_GUARD);
+    player.guard = clamp(player.guard + EGG_GUARD_RECOVERY * dt, 0, player.maxGuard);
   }
   player.energy = clamp(player.energy + EGG_ENERGY_RECOVERY * dt, 0, EGG_MAX_ENERGY);
   if (input.block && grounded && !attacking && player.guard > 5) {
     player.blockUntil = now + 120;
-    player.guard = clamp(player.guard - EGG_GUARD_DRAIN * dt, 0, EGG_MAX_GUARD);
+    player.guard = clamp(player.guard - EGG_GUARD_DRAIN * dt, 0, player.maxGuard);
   }
   if (!stunned && !attacking) {
     let direction = 0;
     if (input.left) direction -= 1;
     if (input.right) direction += 1;
-    player.vx = direction * (now < player.blockUntil ? EGG_BLOCK_MOVE_SPEED : EGG_MOVE_SPEED);
+    const speedBoost = now < player.skillUntil || now < player.ultimateUntil ? eggSkillSpeedBoost(player) : 1;
+    const blockSpeed = Math.max(92, player.moveSpeed * speedBoost * (EGG_BLOCK_MOVE_SPEED / EGG_MOVE_SPEED));
+    player.vx = direction * (now < player.blockUntil ? blockSpeed : player.moveSpeed * speedBoost);
     if (direction !== 0) player.facing = direction > 0 ? 1 : -1;
     if (input.up && grounded) player.vy = EGG_JUMP_VELOCITY;
-    const canSpecial = input.special && player.energy >= EGG_SPECIAL_COST;
-    if ((canSpecial || input.light || input.heavy) && now >= player.cooldownUntil) {
-      player.attack = canSpecial ? "special" : (input.heavy ? "heavy" : "light");
-      if (canSpecial) {
-        player.energy = clamp(player.energy - EGG_SPECIAL_COST, 0, EGG_MAX_ENERGY);
-        player.vx += player.facing * EGG_SPECIAL_DASH;
-      }
-      player.attackUntil = now + (canSpecial ? EGG_SPECIAL_ACTIVE_MS : (input.heavy ? EGG_HEAVY_ACTIVE_MS : EGG_LIGHT_ACTIVE_MS));
-      player.cooldownUntil = now + (canSpecial ? EGG_SPECIAL_COOLDOWN_MS : (input.heavy ? EGG_HEAVY_COOLDOWN_MS : EGG_LIGHT_COOLDOWN_MS));
+    if (input.ultimate && player.energy >= EGG_ULTIMATE_COST && now >= player.cooldownUntil) {
+      useEggUltimate(player, now);
+    } else if (input.special && player.energy >= EGG_SKILL_COST && now >= player.cooldownUntil) {
+      useEggSkill(player, now);
+    }
+    if ((input.light || input.heavy) && now >= player.cooldownUntil) {
+      player.attack = input.heavy ? "heavy" : "light";
+      player.attackUntil = now + (input.heavy ? EGG_HEAVY_ACTIVE_MS : EGG_LIGHT_ACTIVE_MS);
+      player.cooldownUntil = now + (input.heavy ? EGG_HEAVY_COOLDOWN_MS : EGG_LIGHT_COOLDOWN_MS);
       player.attackHit = false;
-      player.vx *= canSpecial ? 0.62 : 0.35;
+      player.vx *= 0.35;
     }
   } else if (attacking) {
     player.vx *= 0.82;
@@ -647,35 +690,98 @@ function updateEggPlayer(player, opponent, dt, now) {
   if (player.attackUntil <= now) player.attack = "";
 }
 
+function useEggSkill(player, now) {
+  player.energy = clamp(player.energy - EGG_SKILL_COST, 0, EGG_MAX_ENERGY);
+  player.cooldownUntil = now + 430;
+  if (player.name === "Egg") {
+    player.hp = Math.min(player.maxHp, player.hp + 24);
+    player.cooldownUntil = Math.max(now, player.cooldownUntil - 160);
+    player.skillUntil = now + 1200;
+  } else if (player.name === "小米") {
+    player.skillUntil = now + 3000;
+  } else if (player.name === "小红") {
+    player.skillUntil = now + 4000;
+  } else if (player.name === "Meo") {
+    player.hp = Math.min(player.maxHp, player.hp + 18);
+    player.skillUntil = now + 5000;
+  } else {
+    player.skillUntil = now + 1800;
+  }
+}
+
+function useEggUltimate(player, now) {
+  player.energy = 0;
+  player.cooldownUntil = now + 680;
+  if (player.name === "Egg") {
+    player.ultimateUntil = now + 5000;
+  } else if (player.name === "小米") {
+    player.ultimateUntil = now + 4000;
+    player.cooldownUntil = now + 160;
+  } else if (player.name === "小红") {
+    player.attack = "ultimate";
+    player.attackUntil = now + 520;
+    player.attackHit = false;
+    player.vx += player.facing * (EGG_SPECIAL_DASH + 90);
+  } else if (player.name === "Meo") {
+    player.hp = Math.min(player.maxHp, player.hp + 28);
+    player.ultimateUntil = now + 5000;
+    player.invincibleUntil = now + 2400;
+  } else {
+    player.ultimateUntil = now + 3000;
+  }
+}
+
+function eggSkillSpeedBoost(player) {
+  if (player.name === "小米") return 1.6;
+  if (player.name === "Egg") return 1.18;
+  return 1;
+}
+
+function eggDamageMultiplier(player, now) {
+  if (player.name === "小红" && now < player.skillUntil) return 1.45;
+  if (player.name === "Egg" && now < player.ultimateUntil) return 1.65;
+  return 1;
+}
+
+function eggIncomingDamageMultiplier(player, now) {
+  if (now < player.invincibleUntil) return 0;
+  if (player.name === "Meo" && now < player.skillUntil) return 0.55;
+  return 1;
+}
+
 function checkEggHit(attacker, defender, now) {
   if (!attacker.attack || attacker.attackHit || now >= attacker.attackUntil) return;
-  const range = attacker.attack === "special" ? 218 : (attacker.attack === "heavy" ? 150 : 112);
-  const baseDamage = attacker.attack === "special" ? 24 : (attacker.attack === "heavy" ? 17 : 8);
-  const damage = baseDamage + Math.min(6, attacker.combo * 2) + (attacker.y > 20 ? 2 : 0);
-  const vertical = Math.abs(attacker.y - defender.y) < (attacker.attack === "special" ? 120 : 95);
+  const range = attacker.attack === "ultimate" ? 190 : (attacker.attack === "heavy" ? 150 : 112);
+  const baseDamage = attacker.attack === "ultimate"
+    ? attacker.specialDamage + 10
+    : (attacker.attack === "heavy" ? attacker.heavyDamage : attacker.lightDamage);
+  let damage = Math.round((baseDamage + Math.min(2, attacker.combo) + (attacker.y > 20 ? 1 : 0)) * eggDamageMultiplier(attacker, now));
+  damage = Math.round(damage * eggIncomingDamageMultiplier(defender, now));
+  const vertical = Math.abs(attacker.y - defender.y) < (attacker.attack === "ultimate" ? 120 : 95);
   const forward = attacker.facing > 0 ? defender.x >= attacker.x : defender.x <= attacker.x;
   const close = Math.abs(attacker.x - defender.x) <= range;
   if (!vertical || !forward || !close) return;
   const blocking = now < defender.blockUntil && defender.facing === -attacker.facing && defender.guard > 0;
   let finalDamage = blocking ? Math.ceil(damage * 0.28) : damage;
   if (blocking) {
-    defender.guard = clamp(defender.guard - damage * (attacker.attack === "special" ? 2.1 : 1.45), 0, EGG_MAX_GUARD);
+    defender.guard = clamp(defender.guard - damage * (attacker.attack === "ultimate" ? 2.1 : 1.45), 0, defender.maxGuard);
     defender.energy = clamp(defender.energy + 7, 0, EGG_MAX_ENERGY);
     if (defender.guard <= 0) {
-      finalDamage = Math.max(finalDamage, 9);
-      defender.hurtUntil = now + 470;
+      finalDamage = Math.max(finalDamage, 5);
+      defender.hurtUntil = now + EGG_GUARD_BREAK_HURT_MS;
       defender.blockUntil = 0;
+      defender.guardBreakUntil = now + EGG_GUARD_BREAK_LABEL_MS;
       roomlessGuardBreak(defender, attacker);
     }
   }
   defender.hp = Math.max(0, defender.hp - finalDamage);
-  if (defender.hurtUntil < now + (blocking ? 90 : 230)) {
-    defender.hurtUntil = now + (blocking ? 90 : 230);
+  if (defender.hurtUntil < now + (blocking ? EGG_BLOCK_HURT_MS : EGG_HIT_HURT_MS)) {
+    defender.hurtUntil = now + (blocking ? EGG_BLOCK_HURT_MS : EGG_HIT_HURT_MS);
   }
-  defender.vx = attacker.facing * (blocking ? 120 : (attacker.attack === "special" ? 360 : 260));
-  defender.vy = Math.max(defender.vy, blocking ? 80 : (attacker.attack === "special" ? 220 : 155));
+  defender.vx = attacker.facing * (blocking ? 125 : (attacker.attack === "ultimate" ? 390 : 280));
+  defender.vy = Math.max(defender.vy, blocking ? 72 : (attacker.attack === "ultimate" ? 210 : 145));
   defender.hitSparkUntil = now + 180;
-  attacker.energy = clamp(attacker.energy + (attacker.attack === "special" ? 8 : 15), 0, EGG_MAX_ENERGY);
+  attacker.energy = clamp(attacker.energy + 8, 0, EGG_MAX_ENERGY);
   attacker.combo = attacker.comboUntil > now ? attacker.combo + 1 : 1;
   attacker.comboUntil = now + 1600;
   attacker.attackHit = true;
@@ -696,6 +802,7 @@ function resolveEggPush(a, b) {
   const minDistance = 84;
   const overlap = minDistance - Math.abs(a.x - b.x);
   if (overlap <= 0) return;
+  if (a.y > EGG_AIR_PASS_HEIGHT || b.y > EGG_AIR_PASS_HEIGHT) return;
   const sign = a.x <= b.x ? -1 : 1;
   a.x += sign * overlap * 0.5;
   b.x -= sign * overlap * 0.5;
@@ -722,26 +829,34 @@ function updateEggAi(room, ai, human, now) {
   const distance = human.x - ai.x;
   const abs = Math.abs(distance);
   const remaining = room.roundEndsAt ? Math.max(0, room.roundEndsAt - now) : EGG_ROUND_MS;
+  const aiLevel = clamp(Number(room.aiLevel || 1), 1, 3);
   const behind = ai.hp + ai.guard * 0.08 < human.hp + human.guard * 0.08 - 8;
   const ahead = ai.hp > human.hp + 14;
   const urgent = remaining < 15_000 && behind;
-  const preferredRange = ahead && !urgent ? 155 : 118;
-  const pressure = urgent ? 1.55 : (behind ? 1.25 : (ahead ? 0.82 : 1));
-  const canSpecial = ai.energy >= 62 && abs < 235 && Math.random() < 0.16 * pressure;
-  const shouldBackstep = ahead && abs < 95 && human.attack && Math.random() < 0.28;
+  const preferredRange = aiLevel === 1 ? 138 : (ahead && !urgent ? 160 : 108);
+  const levelPressure = aiLevel === 3 ? 1.36 : (aiLevel === 2 ? 1.08 : 0.76);
+  const pressure = (urgent ? 1.55 : (behind ? 1.25 : (ahead ? 0.82 : 1))) * levelPressure;
+  const specialRate = aiLevel === 3 ? 0.22 : (aiLevel === 2 ? 0.15 : 0.07);
+  const lightRate = aiLevel === 3 ? 0.30 : (aiLevel === 2 ? 0.23 : 0.14);
+  const heavyRate = aiLevel === 3 ? 0.16 : (aiLevel === 2 ? 0.11 : 0.06);
+  const canUltimate = ai.energy >= EGG_ULTIMATE_COST && (behind || aiLevel === 3) && Math.random() < 0.18 * pressure;
+  const canSpecial = !canUltimate && ai.energy >= EGG_SKILL_COST + 7 && Math.random() < specialRate * pressure;
+  const shouldBackstep = ahead && abs < 95 && human.attack && Math.random() < (0.22 + aiLevel * 0.05);
+  const blockBase = aiLevel === 3 ? 0.50 : (aiLevel === 2 ? 0.42 : 0.28);
   ai.input = {
     left: shouldBackstep ? distance > 0 : abs > preferredRange && distance < 0,
     right: shouldBackstep ? distance < 0 : abs > preferredRange && distance > 0,
-    up: (urgent || human.attack === "special") && abs < 185 && Math.random() < 0.045 * pressure,
-    light: !canSpecial && abs < 118 && Math.random() < 0.24 * pressure,
-    heavy: !canSpecial && abs < 170 && Math.random() < 0.12 * pressure,
+    up: (urgent || human.attack === "ultimate" || aiLevel === 3) && abs < 185 && Math.random() < (0.032 + aiLevel * 0.009) * pressure,
+    light: !canSpecial && !canUltimate && abs < 118 && Math.random() < lightRate * pressure,
+    heavy: !canSpecial && !canUltimate && abs < 170 && Math.random() < heavyRate * pressure,
     special: canSpecial,
-    block: abs < 190 && human.attack && ai.guard > 15 && Math.random() < (ahead ? 0.68 : (human.attack === "special" ? 0.72 : 0.50)),
+    ultimate: canUltimate,
+    block: abs < 190 && human.attack && ai.guard > 15 && Math.random() < (blockBase + (ahead ? 0.14 : 0) + (human.attack === "ultimate" ? 0.18 : 0)),
   };
 }
 
 function eggPublicState(room, deviceId, extra = {}) {
-  const slot = extra.slot || (room.players.find((player) => player.deviceId === deviceId) || {}).slot || 0;
+  const slot = extra.slot || (deviceId ? (room.players.find((player) => player.deviceId === deviceId) || {}).slot : 0) || 0;
   return {
     ok: true,
     roomId: room.id,
@@ -751,6 +866,7 @@ function eggPublicState(room, deviceId, extra = {}) {
     message: room.message,
     roundWinner: room.roundWinner || 0,
     matchWinner: room.matchWinner || 0,
+    aiLevel: room.aiLevel || 1,
     winRounds: EGG_WIN_ROUNDS,
     roundMs: EGG_ROUND_MS,
     roundMsRemaining: room.status === "running" && room.roundEndsAt ? Math.max(0, room.roundEndsAt - Date.now()) : EGG_ROUND_MS,
@@ -761,11 +877,18 @@ function eggPublicState(room, deviceId, extra = {}) {
     players: room.players.map((player) => ({
       slot: player.slot,
       name: player.name,
+      archetype: player.archetype || eggStatsForName(player.name).archetype,
       connected: player.connected,
       ready: player.ready,
+      maxHp: Math.round(player.maxHp || EGG_MAX_HP),
       hp: Math.max(0, Math.round(player.hp)),
       energy: Math.round(player.energy || 0),
+      maxGuard: Math.round(player.maxGuard || EGG_MAX_GUARD),
       guard: Math.round(player.guard || 0),
+      moveSpeed: Math.round(player.moveSpeed || EGG_MOVE_SPEED),
+      lightDamage: player.lightDamage || 8,
+      heavyDamage: player.heavyDamage || 17,
+      specialDamage: player.specialDamage || 24,
       wins: player.wins || 0,
       x: Math.round(player.x),
       y: Math.round(player.y),
@@ -775,6 +898,9 @@ function eggPublicState(room, deviceId, extra = {}) {
       blocking: Date.now() < player.blockUntil,
       hurt: Date.now() < player.hurtUntil,
       hitSpark: Date.now() < player.hitSparkUntil,
+      guardBroken: Date.now() < (player.guardBreakUntil || 0),
+      skillActive: Date.now() < (player.skillUntil || 0),
+      ultimateActive: Date.now() < (player.ultimateUntil || 0),
     })),
   };
 }
@@ -787,6 +913,35 @@ function safeEggId(value) {
 function safeEggName(value) {
   const text = String(value || "").trim().replace(/\s+/g, " ");
   return text.slice(0, 12) || "Egg";
+}
+
+function eggDisplayNameForSlot(slot, name) {
+  const text = safeEggName(name);
+  if (slot === 2 && text === "Egg") return "小红";
+  return text;
+}
+
+function eggStatsForName(name) {
+  const text = safeEggName(name);
+  return EGG_CHARACTER_STATS[text] || EGG_CHARACTER_STATS.Egg;
+}
+
+function applyEggStats(player, options = {}) {
+  const stats = eggStatsForName(player.name);
+  player.archetype = stats.archetype;
+  player.maxHp = stats.maxHp;
+  player.maxGuard = stats.maxGuard;
+  player.moveSpeed = stats.moveSpeed;
+  player.lightDamage = stats.lightDamage;
+  player.heavyDamage = stats.heavyDamage;
+  player.specialDamage = stats.specialDamage;
+  if (options.resetVitals) {
+    player.hp = stats.maxHp;
+    player.guard = stats.maxGuard;
+  } else {
+    player.hp = clamp(player.hp || stats.maxHp, 0, stats.maxHp);
+    player.guard = clamp(player.guard || stats.maxGuard, 0, stats.maxGuard);
+  }
 }
 
 function clamp(value, min, max) {

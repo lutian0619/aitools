@@ -108,7 +108,7 @@
     "name": "Egg和他的朋友们",
     "app": "egg-friends",
     "packageName": "com.eggfriends",
-    "description": "横屏街机格斗游戏，支持局域网二人对战和人机练习，包含三局两胜、60 秒小局、生命、能量、护盾、轻重攻击、必杀和破防规则。",
+    "description": "横屏街机格斗游戏，人机练习可在手机本机运行并保存 AI 等级，局域网用于二人实时对战；支持 Egg、小米、Meo、小红选角和战力差异，包含三局两胜、60 秒小局、生命、能量、防御槽、轻重攻击、技、奥和破防规则。",
     "apkFileName": "egg-friends-debug.apk",
     "apkCandidates": [
       "artifacts/apk/egg-friends-debug.apk",
