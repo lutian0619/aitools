@@ -111,7 +111,7 @@ stop() {
 open_web() {
   start
   if command -v open >/dev/null 2>&1; then
-    open "$URL"
+    open -g "$URL"
   else
     echo "$URL"
   fi

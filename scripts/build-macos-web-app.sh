@@ -23,4 +23,4 @@ sed "s#__REPO_ROOT__#$ROOT#g" "$SRC_DIR/Info.plist" > "$CONTENTS/Info.plist"
 chmod +x "$MACOS/AITools Web"
 
 echo "Built: $APP"
-echo "Open it with: open \"$APP\""
+echo "Open it with: open -g \"$APP\""

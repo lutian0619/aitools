@@ -63,7 +63,7 @@
 }
 
 - (void)openWebOnly {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://127.0.0.1:8788/web/"]];
+    [self runOpenInBackground:@"http://127.0.0.1:8788/web/"];
     [self refreshStatus];
 }
 
@@ -115,6 +115,18 @@
         return output ?: @"";
     } @catch (NSException *exception) {
         return [NSString stringWithFormat:@"Failed: %@", exception.reason ?: @"Unknown error"];
+    }
+}
+
+- (void)runOpenInBackground:(NSString *)target {
+    NSTask *task = [[NSTask alloc] init];
+    task.launchPath = @"/usr/bin/open";
+    task.arguments = @[@"-g", target];
+
+    @try {
+        [task launch];
+    } @catch (NSException *exception) {
+        self.statusMenuItem.title = [NSString stringWithFormat:@"Open failed: %@", exception.reason ?: @"Unknown error"];
     }
 }
 

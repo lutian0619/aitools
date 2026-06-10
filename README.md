@@ -62,10 +62,10 @@ macOS 菜单栏 App：
 
 ```bash
 scripts/build-macos-web-app.sh
-open "build/macos/AITools Web.app"
+open -g "build/macos/AITools Web.app"
 ```
 
-运行后屏幕顶部菜单栏会出现 `AITools On` / `AITools Off`，可直接启动、停止、重启和打开 Web。生成的 `.app` 在 `build/macos/` 下，是本机构建产物，不提交到 Git；需要时可以拖到 Dock。
+运行后屏幕顶部菜单栏会出现 `AITools On` / `AITools Off`，可直接启动、停止、重启和后台打开 Web。生成的 `.app` 在 `build/macos/` 下，是本机构建产物，不提交到 Git；需要时可以拖到 Dock。
 
 原始启动脚本仍可直接使用：
 
