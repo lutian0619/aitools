@@ -48,6 +48,27 @@ web/tools/diary/    一页日记 Web 客户端
 
 ## 启动服务
 
+推荐用统一控制脚本管理 Web 服务：
+
+```bash
+scripts/webctl.sh start    # 启动
+scripts/webctl.sh stop     # 停止
+scripts/webctl.sh restart  # 重启
+scripts/webctl.sh status   # 查看状态
+scripts/webctl.sh open     # 启动并打开 Web
+```
+
+macOS 菜单栏 App：
+
+```bash
+scripts/build-macos-web-app.sh
+open "build/macos/AITools Web.app"
+```
+
+运行后屏幕顶部菜单栏会出现 `AITools On` / `AITools Off`，可直接启动、停止、重启和打开 Web。生成的 `.app` 在 `build/macos/` 下，是本机构建产物，不提交到 Git；需要时可以拖到 Dock。
+
+原始启动脚本仍可直接使用：
+
 ```bash
 scripts/start-server.sh
 ```
