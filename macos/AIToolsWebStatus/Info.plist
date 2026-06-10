@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleExecutable</key>
-  <string>AITools Web</string>
+  <string>AIToolsWeb</string>
   <key>CFBundleIdentifier</key>
   <string>local.aitools.webstatus</string>
   <key>CFBundleName</key>

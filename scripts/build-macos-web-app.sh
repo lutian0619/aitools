@@ -17,10 +17,15 @@ mkdir -p "$MACOS"
 
 clang -fobjc-arc "$SRC_DIR/main.m" \
   -framework Cocoa \
-  -o "$MACOS/AITools Web"
+  -o "$MACOS/AIToolsWeb"
 
 sed "s#__REPO_ROOT__#$ROOT#g" "$SRC_DIR/Info.plist" > "$CONTENTS/Info.plist"
-chmod +x "$MACOS/AITools Web"
+chmod +x "$MACOS/AIToolsWeb"
+printf "APPL????" > "$CONTENTS/PkgInfo"
+
+if command -v codesign >/dev/null 2>&1; then
+  codesign --force --deep --sign - "$APP" >/dev/null
+fi
 
 echo "Built: $APP"
 echo "Open it with: open -g \"$APP\""

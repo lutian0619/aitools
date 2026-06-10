@@ -9,6 +9,11 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    if ([self anotherInstanceIsRunning]) {
+        [NSApp terminate:nil];
+        return;
+    }
+
     self.repoRoot = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"AIToolsRepoRoot"];
     if (self.repoRoot.length == 0) {
         self.repoRoot = [[NSFileManager defaultManager] currentDirectoryPath];
@@ -20,6 +25,20 @@
     self.statusItem.button.toolTip = @"AITools Web";
     [self buildMenu];
     [self refreshStatus];
+}
+
+- (BOOL)anotherInstanceIsRunning {
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+    if (bundleIdentifier.length == 0) return NO;
+
+    pid_t currentPid = [[NSProcessInfo processInfo] processIdentifier];
+    NSArray<NSRunningApplication *> *apps = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleIdentifier];
+    for (NSRunningApplication *app in apps) {
+        if (app.processIdentifier != currentPid && !app.terminated) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 - (void)buildMenu {
