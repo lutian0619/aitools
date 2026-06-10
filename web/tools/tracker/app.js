@@ -821,8 +821,8 @@ function renderLineChart(list, unit) {
       <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="数值变化">
         <line x1="${padX}" y1="${padY}" x2="${width - padX}" y2="${padY}" stroke="#ead5dd" />
         <line x1="${padX}" y1="${height / 2}" x2="${width - padX}" y2="${height / 2}" stroke="#ead5dd" />
-        <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#dad0c2" />
-        <g fill="#c8a15a">${rects}</g>
+        <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#d8d0c4" />
+        <g fill="#ad7f34">${rects}</g>
         <g class="chart-labels">
           ${axisLabels}
           <text x="${padX}" y="${height - 10}" text-anchor="start">${escapeHtml(firstDate)}</text>
@@ -1050,8 +1050,8 @@ function renderAnnualMonthly(project, list) {
       <div class="annual-month-chart">
         <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="按月统计">
           <line x1="${padX}" y1="${padY}" x2="${width - padX}" y2="${padY}" stroke="#ead5dd" />
-          <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#dad0c2" />
-          <g fill="#c8a15a">${bars}</g>
+          <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#d8d0c4" />
+          <g fill="#ad7f34">${bars}</g>
           <g class="chart-labels">
             <text x="${width - 8}" y="${padY + 4}" text-anchor="end">${formatNumber(max)}${project.kind === "number" ? escapeHtml(project.unit || "") : "次"}</text>
             <text x="${padX}" y="${height - 8}" text-anchor="start">1月</text>

@@ -1,14 +1,15 @@
 :root {
-  --card: #ffffff;
-  --card-soft: #f4dfd0;
-  --ink: #1e201d;
-  --muted: #75685f;
-  --line-strong: #cdbba7;
-  --accent-dark: #6f5848;
-  --accent-warm: #cdbba7;
-  --accent-gold: #c8a15a;
+  --card: #fffefa;
+  --card-soft: #ece6dc;
+  --ink: #26231f;
+  --muted: #625b52;
+  --line-strong: #b8ab99;
+  --accent-dark: #36312a;
+  --accent-warm: #7c6f5d;
+  --accent-gold: #ad7f34;
+  --accent-olive: #4f6657;
   --danger: #8b2e25;
-  --shadow-soft: 0 14px 34px rgba(72, 55, 34, 0.1);
+  --shadow-soft: 0 14px 34px rgba(30, 27, 23, 0.08);
 }
 
 * {
@@ -17,9 +18,10 @@
 
 body {
   margin: 0;
-  background: var(--paper);
+  background:
+    linear-gradient(180deg, #faf8f3 0%, var(--paper) 36%, #ebe6dd 100%);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body, "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif);
 }
 
 .app {
@@ -41,6 +43,7 @@ body {
 
 h1 {
   margin: 0;
+  font-family: var(--font-display, "Songti SC", "STSong", Georgia, serif);
   font-size: 34px;
   line-height: 1;
   letter-spacing: 0;
@@ -72,8 +75,8 @@ h2 {
   border-radius: 9px;
   font-size: 15px;
   color: var(--accent);
-  background: #ffffff;
-  box-shadow: 0 8px 20px rgba(72, 55, 34, 0.08);
+  background: var(--card);
+  box-shadow: 0 8px 20px rgba(30, 27, 23, 0.06);
 }
 
 .tabs {
@@ -83,7 +86,7 @@ h2 {
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f4dfd0;
+  background: var(--card-soft);
   margin-bottom: 14px;
 }
 
@@ -99,7 +102,7 @@ button {
   background: var(--card);
   color: var(--ink);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 120ms ease;
 }
 
@@ -113,7 +116,7 @@ button {
   display: grid;
   place-items: center;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -165,7 +168,7 @@ button.danger {
 
 .editor:empty::before {
   content: attr(data-placeholder);
-  color: #aaa89e;
+  color: #a19a90;
 }
 
 .editor-image {
@@ -183,7 +186,7 @@ button.danger {
   object-fit: contain;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f4dfd0;
+  background: var(--card-soft);
 }
 
 .editor-image button {
@@ -269,7 +272,7 @@ button.danger {
 
 .settings-panel {
   border-top: 4px solid var(--accent);
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 254, 250, 0.96);
 }
 
 .settings-panel::before {
@@ -283,15 +286,15 @@ button.danger {
   gap: 10px;
   padding: 13px 15px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 250, 242, 0.82);
+  background: rgba(250, 248, 243, 0.86);
 }
 
 .settings-head .tool-button {
   width: 36px;
   min-width: 36px;
   height: 36px;
-  border-color: rgba(218, 208, 194, 0.75);
-  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(216, 208, 196, 0.75);
+  background: rgba(255, 254, 250, 0.72);
 }
 
 .settings-head h2 {
@@ -330,7 +333,7 @@ button.danger {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--card);
-  box-shadow: 0 10px 24px rgba(72, 55, 34, 0.07);
+  box-shadow: 0 10px 24px rgba(30, 27, 23, 0.06);
 }
 
 .settings-row {
@@ -353,7 +356,7 @@ button.danger {
 }
 
 .settings-row:hover {
-  background: #ffffff;
+  background: #faf8f3;
 }
 
 .settings-row:last-child {
@@ -368,7 +371,7 @@ button.danger {
   font-size: 12px;
   line-height: 1.45;
   background:
-    linear-gradient(90deg, rgba(205, 187, 167, 0.12), transparent 55%),
+    linear-gradient(90deg, rgba(124, 111, 93, 0.12), transparent 55%),
     var(--card-soft);
 }
 
@@ -423,7 +426,7 @@ button.danger {
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--card);
   color: var(--ink);
   font-size: 15px;
   outline: none;
@@ -431,7 +434,7 @@ button.danger {
 
 .settings-field input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(138, 113, 94, 0.12);
+  box-shadow: 0 0 0 3px rgba(54, 49, 42, 0.14);
 }
 
 .about-card {
@@ -439,9 +442,9 @@ button.danger {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(205, 187, 167, 0.1), transparent 44%),
+    linear-gradient(135deg, rgba(124, 111, 93, 0.1), transparent 44%),
     var(--card);
-  box-shadow: 0 10px 24px rgba(72, 55, 34, 0.07);
+  box-shadow: 0 10px 24px rgba(30, 27, 23, 0.06);
 }
 
 .about-card strong {
@@ -469,7 +472,7 @@ button.danger {
   grid-template-columns: 74px 1fr;
   gap: 10px;
   padding-top: 8px;
-  border-top: 1px solid rgba(218, 208, 194, 0.65);
+  border-top: 1px solid rgba(216, 208, 196, 0.7);
 }
 
 .about-card dt {
@@ -529,11 +532,11 @@ button.danger {
 }
 
 .day:not(.selected):has(br) {
-  box-shadow: inset 0 -3px 0 rgba(200, 161, 90, 0.28);
+  box-shadow: inset 0 -3px 0 rgba(173, 127, 52, 0.3);
 }
 
 .day.dim {
-  color: #aaa89e;
+  color: #a19a90;
 }
 
 .chips {
@@ -582,10 +585,10 @@ button.danger {
   padding: 0 12px;
   border-radius: 999px;
   border-color: var(--line);
-  background: #ffffff;
+  background: var(--card);
   color: var(--muted);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -597,11 +600,11 @@ button.danger {
 }
 
 .chip:nth-child(3n) {
-  background: #f4dfd0;
+  background: var(--card-soft);
 }
 
 .chip:nth-child(4n) {
-  background: #e7f1df;
+  background: #e9eee6;
 }
 
 .chip.primary:nth-child(n) {
@@ -622,7 +625,7 @@ button.danger {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--card);
-  box-shadow: 0 10px 24px rgba(72, 55, 34, 0.08);
+  box-shadow: 0 10px 24px rgba(30, 27, 23, 0.07);
 }
 
 .entry .date {
