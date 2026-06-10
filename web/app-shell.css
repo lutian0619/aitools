@@ -1,51 +1,60 @@
 :root {
   color-scheme: light;
-  --ink: #2f2925;
-  --muted: #75685f;
-  --paper: #fdefef;
-  --panel: #ffffff;
-  --panel-soft: #f4dfd0;
-  --line: #dad0c2;
-  --line-strong: #cdbba7;
-  --accent: #8a715e;
-  --accent-warm: #cdbba7;
-  --accent-gold: #c8a15a;
-  --shadow-soft: 0 10px 26px rgba(72, 55, 34, 0.08);
+  --ink: #26231f;
+  --muted: #625b52;
+  --paper: #f3f1ec;
+  --panel: #fffefa;
+  --panel-soft: #ece6dc;
+  --line: #d8d0c4;
+  --line-strong: #b8ab99;
+  --accent: #36312a;
+  --accent-warm: #7c6f5d;
+  --accent-gold: #ad7f34;
+  --accent-olive: #4f6657;
+  --shadow-soft: 0 14px 34px rgba(30, 27, 23, 0.08);
+  --font-body: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-display: "Songti SC", "STSong", Georgia, serif;
 }
 
 body {
-  background: var(--paper);
+  background:
+    linear-gradient(180deg, #faf8f3 0%, var(--paper) 36%, #ebe6dd 100%);
   color: var(--ink);
+  font-family: var(--font-body);
 }
 
 .shellbar {
   position: relative;
   z-index: 100;
-  height: 58px;
+  height: 62px;
   display: grid;
   grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
   align-items: center;
   gap: 12px;
   padding: 0 18px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 254, 250, 0.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 28px rgba(38, 35, 31, 0.04);
 }
 
 .shellbrand {
   color: var(--accent);
   text-decoration: none;
+  font-family: var(--font-display);
   font-size: 15px;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .shelltitle {
   margin: 0;
   color: var(--ink);
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 23px;
   line-height: 1;
   letter-spacing: 0;
   text-align: center;
+  font-weight: 700;
 }
 
 .shellactions {
@@ -65,10 +74,11 @@ body {
   text-decoration: none;
   font: inherit;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 760;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(38, 35, 31, 0.04);
 }
 
 .shellbutton.primary {
@@ -88,6 +98,7 @@ body {
   color: var(--accent);
   font-size: 15px;
   font-weight: 800;
+  box-shadow: 0 4px 12px rgba(38, 35, 31, 0.04);
 }
 
 .shell-icon-button svg {
@@ -103,13 +114,13 @@ body {
 .workspace {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 24px 0 72px;
+  padding: 26px 0 72px;
 }
 
 .panel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 254, 250, 0.96);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
 }
@@ -117,8 +128,8 @@ body {
 .panel::before {
   content: "";
   display: block;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-warm), var(--accent-gold), var(--accent));
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-gold), var(--accent-olive));
 }
 
 @media (max-width: 700px) {

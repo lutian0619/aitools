@@ -3,7 +3,7 @@
   right: 18px;
   top: 14px;
   z-index: 120;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body, "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif);
 }
 
 .product-switcher.inline {
@@ -18,18 +18,18 @@
   min-width: 0;
   padding: 0 4px;
   border: 0;
-  border-bottom: 2px solid #cdbba7;
+  border-bottom: 2px solid var(--line-strong);
   border-radius: 0;
   background: transparent;
-  color: #8a715e;
+  color: var(--accent);
   font: inherit;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 780;
   cursor: pointer;
 }
 
 .product-switcher button:hover {
-  color: #6f5848;
+  color: var(--accent-warm);
 }
 
 .product-switcher-panel {
@@ -38,10 +38,10 @@
   top: 44px;
   z-index: 121;
   width: min(292px, calc(100vw - 32px));
-  border: 1px solid #cdbba7;
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 18px 48px rgba(33, 35, 31, 0.2);
+  background: var(--panel);
+  box-shadow: 0 18px 48px rgba(38, 35, 31, 0.16);
   overflow: hidden;
 }
 
@@ -60,17 +60,17 @@
   gap: 3px;
   padding: 10px;
   border-radius: 7px;
-  color: #2f2925;
+  color: var(--ink);
   text-decoration: none;
 }
 
 .product-switcher-item:hover {
-  background: #f4dfd0;
+  background: var(--panel-soft);
 }
 
 .product-switcher-item.active {
-  background: #f4dfd0;
-  box-shadow: inset 3px 0 0 #cdbba7;
+  background: var(--panel-soft);
+  box-shadow: inset 3px 0 0 var(--accent-gold);
 }
 
 .product-switcher-item b {
@@ -78,7 +78,7 @@
 }
 
 .product-switcher-item small {
-  color: #75685f;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
 }
