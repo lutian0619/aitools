@@ -773,11 +773,9 @@ function renderLineChart(list, unit) {
     `;
   }
   const values = points.map((record) => Number(record.amount));
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const spread = max - min || 1;
-  const baseMin = min >= 0 ? 0 : -niceAxisMax(Math.abs(min));
-  const baseMax = max <= 0 ? 0 : niceAxisMax(max);
+  const axis = adaptiveAxisBounds(values);
+  const baseMin = axis.min;
+  const baseMax = axis.max;
   const baseSpread = baseMax - baseMin || 1;
   const width = 640;
   const height = 220;
@@ -893,6 +891,47 @@ function niceAxisMax(value) {
   const step = normalized <= 2 ? 2 : normalized <= 4 ? 4 : normalized <= 6 ? 6 : normalized <= 8 ? 8 : 10;
   const max = step * magnitude;
   return Math.max(2, Math.ceil(max));
+}
+
+function adaptiveAxisBounds(values) {
+  const finiteValues = values.filter((value) => Number.isFinite(value));
+  if (!finiteValues.length) return { min: 0, max: 1 };
+  const min = Math.min(...finiteValues);
+  const max = Math.max(...finiteValues);
+  const spread = max - min;
+  if (spread <= 0) {
+    const padding = Math.max(Math.abs(max) * 0.08, 1);
+    return niceAxisBounds(min - padding, max + padding);
+  }
+  const padding = spread * 0.12;
+  let lower = min - padding;
+  let upper = max + padding;
+  if (min >= 0 && lower < 0) lower = 0;
+  if (max <= 0 && upper > 0) upper = 0;
+  return niceAxisBounds(lower, upper);
+}
+
+function niceAxisBounds(lower, upper) {
+  if (!Number.isFinite(lower) || !Number.isFinite(upper)) return { min: 0, max: 1 };
+  if (lower === upper) {
+    lower -= 1;
+    upper += 1;
+  }
+  const span = Math.abs(upper - lower) || 1;
+  const step = niceAxisStep(span / 4);
+  const niceMin = Math.floor(lower / step) * step;
+  const niceMax = Math.ceil(upper / step) * step;
+  return { min: niceMin, max: niceMax > niceMin ? niceMax : niceMin + step };
+}
+
+function niceAxisStep(value) {
+  if (!Number.isFinite(value) || value <= 0) return 1;
+  const magnitude = 10 ** Math.floor(Math.log10(value));
+  const normalized = value / magnitude;
+  if (normalized <= 1) return magnitude;
+  if (normalized <= 2) return 2 * magnitude;
+  if (normalized <= 5) return 5 * magnitude;
+  return 10 * magnitude;
 }
 
 function renderCalendar(project, list, append = false) {
