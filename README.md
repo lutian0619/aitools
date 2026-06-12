@@ -95,6 +95,26 @@ http://192.168.x.x:8788/web/
 
 ## APK 构建
 
+所有 Android APK 必须使用同一把调试签名 key，避免手机端覆盖安装时
+出现签名不一致。
+
+- 默认签名文件：`~/.android/debug.keystore`
+- 统一校验脚本：`scripts/android-signing.sh`
+- 固定 SHA-256 指纹：
+
+```text
+9E:DB:23:63:FC:93:67:27:3E:61:35:59:F3:EC:76:35:A8:61:EB:3D:6F:D8:EC:B7:05:BA:C8:5D:A7:08:B6:A5
+```
+
+- 各 `android/*-app/scripts/build-apk-manual.sh` 必须在签名前调用
+  `verify_android_keystore "$KEYSTORE"`。
+- 不允许默认使用 `/private/tmp/*.keystore`，也不允许在构建时自动生成新的 keystore。
+- 如果 keystore 缺失或指纹不匹配，构建必须失败；应恢复原 key，不要换 key 后继续出包。
+- 如确需临时指定 key，可使用对应环境变量，例如 `TRACKER_KEYSTORE`、
+  `DIARY_KEYSTORE`、`MARKET_KEYSTORE`，但指纹仍必须匹配。
+- 如果要同步更新 `ANDROID_DEBUG_KEYSTORE_SHA256`，必须确认这是一次有意
+  签名迁移，并接受覆盖安装影响。
+
 单独构建：
 
 ```bash
