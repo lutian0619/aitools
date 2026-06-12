@@ -5,7 +5,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SDK_ROOT="${ANDROID_SDK_ROOT:-/Users/gogogo/Library/Android/sdk}"
 BUILD_TOOLS="$SDK_ROOT/build-tools/35.0.0"
 ANDROID_JAR="$SDK_ROOT/platforms/android-35/android.jar"
-KEYSTORE="${PRINT_KEYSTORE:-/private/tmp/quick-print-debug.keystore}"
+SIGNING_HELPER="$ROOT/../../scripts/android-signing.sh"
+source "$SIGNING_HELPER"
+KEYSTORE="$(android_keystore_from_env "${PRINT_KEYSTORE:-}")"
 
 cd "$ROOT"
 
@@ -48,17 +50,7 @@ cp build/manual/resources.apk build/manual/unsigned.apk
 zip -q -j build/manual/unsigned.apk build/manual/dex/classes.dex
 "$BUILD_TOOLS/zipalign" -f 4 build/manual/unsigned.apk build/manual/aligned.apk
 
-if [ ! -f "$KEYSTORE" ]; then
-  keytool -genkeypair \
-    -keystore "$KEYSTORE" \
-    -storepass android \
-    -keypass android \
-    -alias androiddebugkey \
-    -keyalg RSA \
-    -keysize 2048 \
-    -validity 10000 \
-    -dname CN=AndroidDebug,O=Android,C=US
-fi
+verify_android_keystore "$KEYSTORE"
 
 "$BUILD_TOOLS/apksigner" sign \
   --ks "$KEYSTORE" \
