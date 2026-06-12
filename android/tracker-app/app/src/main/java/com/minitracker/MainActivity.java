@@ -1915,6 +1915,62 @@ public class MainActivity extends Activity {
         return Math.max(2f, (float) Math.ceil(step * magnitude));
     }
 
+    private float[] adaptiveAxisBounds(List<Float> values) {
+        if (values.isEmpty()) return new float[]{0f, 1f};
+        boolean hasValue = false;
+        float min = 0f;
+        float max = 0f;
+        for (float value : values) {
+            if (Float.isNaN(value) || Float.isInfinite(value)) continue;
+            if (!hasValue) {
+                min = value;
+                max = value;
+                hasValue = true;
+                continue;
+            }
+            min = Math.min(min, value);
+            max = Math.max(max, value);
+        }
+        if (!hasValue) return new float[]{0f, 1f};
+        float spread = max - min;
+        if (spread <= 0f) {
+            float padding = Math.max(Math.abs(max) * 0.08f, 1f);
+            return niceAxisBounds(min - padding, max + padding);
+        }
+        float padding = spread * 0.12f;
+        float lower = min - padding;
+        float upper = max + padding;
+        if (min >= 0f && lower < 0f) lower = 0f;
+        if (max <= 0f && upper > 0f) upper = 0f;
+        return niceAxisBounds(lower, upper);
+    }
+
+    private float[] niceAxisBounds(float lower, float upper) {
+        if (Float.isNaN(lower) || Float.isInfinite(lower) || Float.isNaN(upper) || Float.isInfinite(upper)) {
+            return new float[]{0f, 1f};
+        }
+        if (lower == upper) {
+            lower -= 1f;
+            upper += 1f;
+        }
+        float span = Math.max(0.0001f, Math.abs(upper - lower));
+        float step = niceAxisStep(span / 4f);
+        float niceMin = (float) Math.floor(lower / step) * step;
+        float niceMax = (float) Math.ceil(upper / step) * step;
+        if (niceMax <= niceMin) niceMax = niceMin + step;
+        return new float[]{niceMin, niceMax};
+    }
+
+    private float niceAxisStep(float value) {
+        if (Float.isNaN(value) || Float.isInfinite(value) || value <= 0f) return 1f;
+        double magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+        double normalized = value / magnitude;
+        if (normalized <= 1) return (float) magnitude;
+        if (normalized <= 2) return (float) (2 * magnitude);
+        if (normalized <= 5) return (float) (5 * magnitude);
+        return (float) (10 * magnitude);
+    }
+
     private String ensureDeviceId() {
         String id = preferences.getString(DEVICE_ID_KEY, "");
         if (id.isEmpty()) {
@@ -2284,15 +2340,9 @@ public class MainActivity extends Activity {
                 float y = top + (bottom - top) * i / 2f;
                 canvas.drawLine(left, y, right, y, gridPaint);
             }
-            float min = values.get(0);
-            float max = values.get(0);
-            for (float value : values) {
-                min = Math.min(min, value);
-                max = Math.max(max, value);
-            }
-            float spread = Math.max(0.1f, max - min);
-            float baseMin = min >= 0f ? 0f : -niceAxisMax(Math.abs(min));
-            float baseMax = max <= 0f ? 0f : niceAxisMax(max);
+            float[] axis = adaptiveAxisBounds(values);
+            float baseMin = axis[0];
+            float baseMax = axis[1];
             float range = Math.max(0.1f, baseMax - baseMin);
             labelPaint.setTextAlign(Paint.Align.RIGHT);
             canvas.drawText(trimNumber(baseMax) + unit, getWidth() - dp(2), top + dp(4), labelPaint);
